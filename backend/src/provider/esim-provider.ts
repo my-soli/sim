@@ -14,6 +14,8 @@ export interface ProviderPackage {
   currency: string;
   /** eSIM Access smsStatus: 0 none, 1 receives SMS from phones and API, 2 API-sent SMS only. */
   smsStatus: number;
+  /** eSIM Access activeType: 1 = validity starts at install, 2 = starts at first network connection abroad. */
+  activeType: 1 | 2;
 }
 
 export interface CreateOrderInput {

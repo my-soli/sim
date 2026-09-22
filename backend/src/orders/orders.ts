@@ -46,6 +46,9 @@ export const toEsimView = (e: Esim, pkg: PackageCache) => ({
   countryName: pkg.countryName,
   planName: pkg.name,
   validityDays: pkg.validityDays,
+  // 1 = validity counts down from install, 2 = from first network connection abroad. Shown on the QR/confirmation
+  // screen so a customer who installs at home before travelling isn't surprised by when the clock actually starts.
+  activeType: pkg.activeType,
 });
 
 @Injectable()

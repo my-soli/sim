@@ -11,6 +11,7 @@ backend/node_modules/
 backend/dist/
 backend/src/generated/
 backend/*.log
+backend/*.tsbuildinfo
 
 # Flutter app
 app/.dart_tool/

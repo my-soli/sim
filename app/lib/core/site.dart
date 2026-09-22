@@ -5,6 +5,25 @@ import 'package:url_launcher/url_launcher.dart';
 import 'brand.dart';
 import 'responsive.dart';
 import 'session.dart';
+import 'theme_controller.dart';
+
+/// Sun/moon button that flips the persisted light/dark preference.
+class ThemeToggle extends StatelessWidget {
+  const ThemeToggle({super.key});
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+        listenable: themeController,
+        builder: (context, _) {
+          final isDark = themeController.mode == ThemeMode.dark;
+          return IconButton(
+            tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+            icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+            onPressed: themeController.toggle,
+          );
+        },
+      );
+}
 
 class _NavItem {
   const _NavItem(this.label, this.path);
@@ -16,6 +35,10 @@ const _navItems = [
   _NavItem('How it works', '/how-it-works'),
   _NavItem('Help', '/help'),
 ];
+
+/// Bolder/larger than the default TextButton label so nav links read clearly at a glance.
+TextStyle? _navLabelStyle(ThemeData theme) =>
+    theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700);
 
 class BrandMark extends StatelessWidget {
   const BrandMark({super.key, this.onDark = false});
@@ -64,7 +87,7 @@ class SiteShell extends StatelessWidget {
       );
     }
     return Scaffold(
-      appBar: AppBar(title: const BrandMark(), titleSpacing: 16, actions: [_AuthButton(compact: true)]),
+      appBar: AppBar(title: const BrandMark(), titleSpacing: 16, actions: const [ThemeToggle(), _AuthButton(compact: true)]),
       drawer: Drawer(
         child: SafeArea(
           child: ListView(padding: const EdgeInsets.all(8), children: [
@@ -103,22 +126,29 @@ class _AuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ListenableBuilder(
         listenable: session,
-        builder: (context, _) => session.signedIn
-            ? (compact
-                ? IconButton(
-                    tooltip: 'Sign out',
-                    icon: const Icon(Icons.logout),
-                    onPressed: () async {
-                      await session.signOut();
-                      if (context.mounted) context.go('/');
-                    })
-                : TextButton(
-                    onPressed: () async {
-                      await session.signOut();
-                      if (context.mounted) context.go('/');
-                    },
-                    child: const Text('Sign out')))
-            : FilledButton(onPressed: () => context.push('/login'), child: const Text('Sign in')),
+        builder: (context, _) {
+          final style = TextButton.styleFrom(textStyle: _navLabelStyle(Theme.of(context)));
+          return session.signedIn
+              ? (compact
+                  ? IconButton(
+                      tooltip: 'Sign out',
+                      icon: const Icon(Icons.logout),
+                      onPressed: () async {
+                        await session.signOut();
+                        if (context.mounted) context.go('/');
+                      })
+                  : TextButton(
+                      style: style,
+                      onPressed: () async {
+                        await session.signOut();
+                        if (context.mounted) context.go('/');
+                      },
+                      child: const Text('Sign out')))
+              : FilledButton(
+                  style: FilledButton.styleFrom(textStyle: _navLabelStyle(Theme.of(context))),
+                  onPressed: () => context.push('/login'),
+                  child: const Text('Sign in'));
+        },
       );
 }
 
@@ -147,9 +177,10 @@ class _NavBar extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 4),
                     child: TextButton(
                       onPressed: () => context.go(item.path),
-                      style: location.startsWith(item.path)
-                          ? TextButton.styleFrom(backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5))
-                          : null,
+                      style: TextButton.styleFrom(
+                        textStyle: _navLabelStyle(theme),
+                        backgroundColor: location.startsWith(item.path) ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5) : null,
+                      ),
                       child: Text(item.label),
                     ),
                   ),
@@ -169,9 +200,12 @@ class _NavBar extends StatelessWidget {
                 const SizedBox(width: 12),
                 TextButton.icon(
                   onPressed: () => context.go('/esims'),
+                  style: TextButton.styleFrom(textStyle: _navLabelStyle(theme)),
                   icon: const Icon(Icons.sim_card_outlined, size: 18),
                   label: const Text('My eSIMs'),
                 ),
+                const SizedBox(width: 4),
+                const ThemeToggle(),
                 const SizedBox(width: 8),
                 const _AuthButton(),
               ]),
@@ -193,11 +227,15 @@ class SiteFooter extends StatelessWidget {
           width: 180,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             for (final l in links)
               InkWell(
+                borderRadius: BorderRadius.circular(4),
                 onTap: () => context.go(l.$2),
-                child: Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: Text(l.$1, style: theme.textTheme.bodyMedium)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Text(l.$1, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                ),
               ),
           ]),
         );
@@ -208,31 +246,85 @@ class SiteFooter extends StatelessWidget {
       child: ContentWidth(
         max: 1200,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40),
+          padding: const EdgeInsets.symmetric(vertical: 48),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 48, runSpacing: 32, children: [
               SizedBox(
                 width: 280,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   const BrandMark(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Text('eSIM data plans for travellers. Pay by card or M-Pesa and get connected in minutes.', style: theme.textTheme.bodyMedium),
+                  const SizedBox(height: 16),
+                  // Real trust signals only (payment rails we actually support) - no fabricated app-store or social badges.
+                  Wrap(spacing: 8, runSpacing: 8, children: [
+                    _TrustChip(icon: Icons.credit_card, label: 'Card'),
+                    _TrustChip(icon: Icons.phone_android, label: 'M-Pesa'),
+                    _TrustChip(icon: Icons.lock_outline, label: 'Secure checkout'),
+                  ]),
                 ]),
               ),
               col('Explore', const [('Destinations', '/destinations'), ('How it works', '/how-it-works'), ('Install guide', '/install')]),
-              col('Support', const [('Help & FAQ', '/help'), ('Contact us', '/contact'), ('My eSIMs', '/esims')]),
-              col('Company', const [('About', '/about'), ('Terms', '/terms'), ('Privacy', '/privacy')]),
+              col('Support', const [('Help centre', '/help'), ('Contact us', '/contact'), ('My eSIMs', '/esims')]),
+              col('Company', const [('About', '/about')]),
             ]),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             Divider(color: theme.colorScheme.outlineVariant),
-            const SizedBox(height: 12),
-            Text('© ${DateTime.now().year} ${Brand.name}. Your phone must be eSIM-compatible and carrier-unlocked.',
-                style: theme.textTheme.bodySmall),
+            const SizedBox(height: 16),
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              runSpacing: 8,
+              children: [
+                Text('© ${DateTime.now().year} ${Brand.name}. Your phone must be eSIM-compatible and carrier-unlocked.',
+                    style: theme.textTheme.bodySmall),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  _LegalLink('Terms', '/terms'),
+                  const SizedBox(width: 16),
+                  _LegalLink('Privacy', '/privacy'),
+                ]),
+              ],
+            ),
           ]),
         ),
       ),
     );
   }
+}
+
+class _TrustChip extends StatelessWidget {
+  const _TrustChip({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 14, color: theme.colorScheme.outline),
+        const SizedBox(width: 5),
+        Text(label, style: theme.textTheme.labelSmall),
+      ]),
+    );
+  }
+}
+
+class _LegalLink extends StatelessWidget {
+  const _LegalLink(this.label, this.path);
+  final String label, path;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        borderRadius: BorderRadius.circular(4),
+        onTap: () => context.go(path),
+        child: Text(label, style: Theme.of(context).textTheme.bodySmall),
+      );
 }
 
 class Crumb {

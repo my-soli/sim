@@ -17,10 +17,10 @@ const locationListResponse = {
 
 const packageListResponse = {
   packageList: [
-    { packageCode: 'CKH003', slug: 'ES_5_30', name: 'Spain 5GB 30Days', price: 112500, currencyCode: 'USD', volume: 5_368_709_120, duration: 30, durationUnit: 'DAY', location: 'ES', dataType: 1, smsStatus: 0 },
-    { packageCode: 'JC016', slug: 'NA-3_1_7', name: 'North America 1GB 7Days', price: 20000, currencyCode: 'USD', volume: 1_073_741_824, duration: 7, durationUnit: 'DAY', location: 'US,CA,MX', dataType: 1, smsStatus: 1 },
+    { packageCode: 'CKH003', slug: 'ES_5_30', name: 'Spain 5GB 30Days', price: 112500, currencyCode: 'USD', volume: 5_368_709_120, duration: 30, durationUnit: 'DAY', location: 'ES', dataType: 1, smsStatus: 0, activeType: 1 },
+    { packageCode: 'JC016', slug: 'NA-3_1_7', name: 'North America 1GB 7Days', price: 20000, currencyCode: 'USD', volume: 1_073_741_824, duration: 7, durationUnit: 'DAY', location: 'US,CA,MX', dataType: 1, smsStatus: 1, activeType: 2 },
     // Excluded from our MVP catalog (daily/unlimited plans need fair-use handling, which is out of scope).
-    { packageCode: 'SG_1_Daily', slug: 'SG_1_Daily', name: 'Singapore Daily 1GB', price: 5000, currencyCode: 'USD', volume: 1_073_741_824, duration: 1, durationUnit: 'DAY', location: 'SG', dataType: 4, smsStatus: 0 },
+    { packageCode: 'SG_1_Daily', slug: 'SG_1_Daily', name: 'Singapore Daily 1GB', price: 5000, currencyCode: 'USD', volume: 1_073_741_824, duration: 1, durationUnit: 'DAY', location: 'SG', dataType: 4, smsStatus: 0, activeType: 1 },
   ],
 };
 
@@ -60,9 +60,9 @@ describe('EsimAccessProvider', () => {
 
     expect(pkgs.map((p) => p.packageId)).toEqual(['ES_5_30', 'NA-3_1_7']); // the Daily plan is filtered out
     const spain = pkgs.find((p) => p.packageId === 'ES_5_30')!;
-    expect(spain).toMatchObject({ country: 'ES', countryName: 'Spain', isRegional: false, dataBytes: 5_368_709_120, validityDays: 30, wholesaleCents: 1125, currency: 'USD', smsStatus: 0 });
+    expect(spain).toMatchObject({ country: 'ES', countryName: 'Spain', isRegional: false, dataBytes: 5_368_709_120, validityDays: 30, wholesaleCents: 1125, currency: 'USD', smsStatus: 0, activeType: 1 });
     const na = pkgs.find((p) => p.packageId === 'NA-3_1_7')!;
-    expect(na).toMatchObject({ country: 'NA-3', isRegional: true, wholesaleCents: 200, smsStatus: 1 });
+    expect(na).toMatchObject({ country: 'NA-3', isRegional: true, wholesaleCents: 200, smsStatus: 1, activeType: 2 });
   });
 
   it('converts balance from 1/10,000-USD units to cents', async () => {

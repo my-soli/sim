@@ -102,7 +102,9 @@ class _PlansScreenState extends State<PlansScreen> {
           ]),
           const SizedBox(height: 20),
           FilledButton.icon(
-            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: const Color(0xFF064E3B)),
+            // This pill is always white (it sits on the fixed brand gradient, not the theme), so its text is a
+            // fixed dark ink too - theme.colorScheme.surface would go near-white and vanish in light mode.
+            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Brand.lightOnBg),
             onPressed: () => _showCompat(context),
             icon: const Icon(Icons.smartphone),
             label: const Text('Check compatibility'),
@@ -237,6 +239,8 @@ class _PlanRow extends StatelessWidget {
                 Text('SMS', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w700)),
               ],
             ]),
+            const SizedBox(height: 2),
+            Text(activeTypeLabel(plan.activeType), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline)),
           ]),
         ),
         Text(money(plan.priceCents), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),

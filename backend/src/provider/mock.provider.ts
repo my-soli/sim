@@ -57,6 +57,8 @@ export class MockEsimProvider extends EsimProvider {
           currency: 'USD',
           // DEMO DATA: the real value comes from the provider's smsStatus. Bigger plans get 1 so the UI can be exercised.
           smsStatus: gb >= 10 ? 1 : gb >= 5 ? 2 : 0,
+          // DEMO DATA: the real value comes from the provider's activeType. Alternate by plan size so both states show up in the UI.
+          activeType: gb >= 5 ? 2 : 1,
         });
       }
     };

@@ -45,13 +45,18 @@ class Plan {
         dataBytes = j['dataBytes'],
         validityDays = j['validityDays'],
         priceCents = j['priceCents'],
-        smsStatus = j['smsStatus'] ?? 0;
+        smsStatus = j['smsStatus'] ?? 0,
+        activeType = j['activeType'] ?? 1;
   final String id, name, country, countryName;
   final int dataBytes, validityDays, priceCents;
 
   /// 0 = no SMS, 1 = can receive SMS (from phones and API), 2 = only SMS sent by us (not useful to customers).
   final int smsStatus;
   bool get receivesSms => smsStatus == 1;
+
+  /// 1 = validity counts down from install, 2 = from first network connection abroad.
+  final int activeType;
+  bool get countsDownFromConnection => activeType == 2;
 }
 
 class EsimInfo {
@@ -68,11 +73,16 @@ class EsimInfo {
         expiresAt = j['expiresAt'] == null ? null : DateTime.parse(j['expiresAt']),
         country = j['country'],
         countryName = j['countryName'],
-        planName = j['planName'];
+        planName = j['planName'],
+        activeType = j['activeType'] ?? 1;
   final String id, orderId, status, country, countryName, planName;
   final String? iccid, smdpAddress, activationCode, lpaString;
   final int dataUsedBytes, dataTotalBytes;
   final DateTime? expiresAt;
+
+  /// 1 = validity counts down from install, 2 = from first network connection abroad.
+  final int activeType;
+  bool get countsDownFromConnection => activeType == 2;
 
   bool get isExpired => status == 'EXPIRED' || status == 'CANCELLED';
   double get usedFraction =>

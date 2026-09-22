@@ -34,7 +34,7 @@ export class CatalogService implements OnApplicationBootstrap {
       const data = {
         name: p.name, country: p.country, countryName: p.countryName, isRegional: p.isRegional,
         dataBytes: BigInt(p.dataBytes), validityDays: p.validityDays, wholesaleCents: p.wholesaleCents,
-        retailCents, currency: p.currency, smsStatus: p.smsStatus, active: true, syncedAt,
+        retailCents, currency: p.currency, smsStatus: p.smsStatus, activeType: p.activeType, active: true, syncedAt,
       };
       await this.prisma.packageCache.upsert({
         where: { providerId_packageId: { providerId: this.provider.id, packageId: p.packageId } },
@@ -84,7 +84,7 @@ export class CatalogService implements OnApplicationBootstrap {
     return rows.map((p) => ({
       id: p.id, name: p.name, country: p.country, countryName: p.countryName,
       dataBytes: Number(p.dataBytes), validityDays: p.validityDays,
-      priceCents: p.retailCents, currency: p.currency, smsStatus: p.smsStatus,
+      priceCents: p.retailCents, currency: p.currency, smsStatus: p.smsStatus, activeType: p.activeType,
     }));
   }
 }

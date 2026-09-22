@@ -144,6 +144,19 @@ class _Ready extends StatelessWidget {
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
       const SizedBox(height: 4),
       Text('Ready to install. Keep these details handy; you can find them again in My eSIMs.', style: theme.textTheme.bodyMedium),
+      const SizedBox(height: 10),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.info_outline, size: 16, color: theme.colorScheme.onSecondaryContainer),
+          const SizedBox(width: 8),
+          Flexible(child: Text(activeTypeLabel(e.activeType), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSecondaryContainer))),
+        ]),
+      ),
       const SizedBox(height: 20),
       Text('Manual activation', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
       const SizedBox(height: 8),

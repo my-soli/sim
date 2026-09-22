@@ -52,7 +52,7 @@ const config = { get: (_k: string, dflt: string) => dflt } as any;
 
 const kePlan = (over: Partial<ProviderPackage> = {}): ProviderPackage => ({
   packageId: 'KE_1_7', name: 'Kenya 1GB 7Days', country: 'KE', countryName: 'Kenya',
-  isRegional: false, dataBytes: 1_073_741_824, validityDays: 7, wholesaleCents: 300, currency: 'USD', smsStatus: 0, ...over,
+  isRegional: false, dataBytes: 1_073_741_824, validityDays: 7, wholesaleCents: 300, currency: 'USD', smsStatus: 0, activeType: 1, ...over,
 });
 
 describe('CatalogService.sync', () => {
@@ -104,8 +104,8 @@ describe('CatalogService.sync', () => {
 describe('CatalogService reads', () => {
   it('countries() and packages() only ever surface the currently-active provider\'s rows', async () => {
     const prisma = fakePrisma([
-      { id: 'a', providerId: 'mock', packageId: 'KE_1_7', name: 'Old', country: 'KE', countryName: 'Kenya', isRegional: false, retailCents: 100, validityDays: 7, active: true, dataBytes: 1n, currency: 'USD', smsStatus: 0 },
-      { id: 'b', providerId: 'esimaccess', packageId: 'KE_1_7_REAL', name: 'Real', country: 'KE', countryName: 'Kenya', isRegional: false, retailCents: 200, validityDays: 7, active: true, dataBytes: 1n, currency: 'USD', smsStatus: 0 },
+      { id: 'a', providerId: 'mock', packageId: 'KE_1_7', name: 'Old', country: 'KE', countryName: 'Kenya', isRegional: false, retailCents: 100, validityDays: 7, active: true, dataBytes: 1n, currency: 'USD', smsStatus: 0, activeType: 1 },
+      { id: 'b', providerId: 'esimaccess', packageId: 'KE_1_7_REAL', name: 'Real', country: 'KE', countryName: 'Kenya', isRegional: false, retailCents: 200, validityDays: 7, active: true, dataBytes: 1n, currency: 'USD', smsStatus: 0, activeType: 2 },
     ]);
     const svc = new CatalogService(prisma, fakeProvider('esimaccess', []), config);
 

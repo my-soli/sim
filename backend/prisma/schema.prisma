@@ -84,6 +84,8 @@ model PackageCache {
   retailCents    Int      @map("retail_cents")
   currency       String   @default("USD")
   smsStatus      Int      @default(0) @map("sms_status")
+  // 1 = validity countdown starts at install, 2 = starts at first network connection abroad.
+  activeType     Int      @default(1) @map("active_type")
   active         Boolean  @default(true)
   syncedAt       DateTime @default(now()) @map("synced_at")
   orders         Order[]

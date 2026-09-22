@@ -35,62 +35,6 @@ class HowItWorksScreen extends StatelessWidget {
   }
 }
 
-class HelpScreen extends StatefulWidget {
-  const HelpScreen({super.key});
-  @override
-  State<HelpScreen> createState() => _HelpScreenState();
-}
-
-class _HelpScreenState extends State<HelpScreen> {
-  String _q = '';
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final q = _q.trim().toLowerCase();
-    final filtered = q.isEmpty
-        ? allFaqs
-        : allFaqs.where((f) => f.q.toLowerCase().contains(q) || f.a.toLowerCase().contains(q)).toList();
-    final groups = <String>[];
-    for (final f in filtered) {
-      if (!groups.contains(f.group)) groups.add(f.group);
-    }
-    return PageBody(
-      crumbs: const [Crumb('Home', '/'), Crumb('Help')],
-      title: 'Help centre',
-      subtitle: 'Answers to common questions about eSIMs, payments and installing.',
-      max: 820,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SearchBar(
-          hintText: 'Search help',
-          leading: const Icon(Icons.search),
-          elevation: const WidgetStatePropertyAll(0),
-          onChanged: (v) => setState(() => _q = v),
-        ),
-        const SizedBox(height: 12),
-        if (filtered.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: Text('No answers found. Try different words, or contact us below.', style: theme.textTheme.bodyLarge),
-          ),
-        for (final g in groups) ...[
-          Padding(
-            padding: const EdgeInsets.only(top: 24, bottom: 12),
-            child: Text(g, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-          ),
-          FaqList(items: filtered.where((f) => f.group == g).toList()),
-        ],
-        const SectionHeading('Still stuck?'),
-        Row(children: [
-          Expanded(child: Text('Our support team can help with orders, installs and payments.', style: theme.textTheme.bodyLarge)),
-          const SizedBox(width: 16),
-          FilledButton(onPressed: () => context.go('/contact'), child: const Text('Contact us')),
-        ]),
-      ]),
-    );
-  }
-}
-
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 

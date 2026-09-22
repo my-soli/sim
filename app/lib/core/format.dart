@@ -15,6 +15,10 @@ String flagFor(String code, {bool regional = false}) {
   return String.fromCharCodes(code.toUpperCase().codeUnits.map((c) => base + c));
 }
 
+/// Short label for when a plan's validity countdown starts (provider's `activeType`: 1 = install, 2 = connection).
+String activeTypeLabel(int activeType) =>
+    activeType == 2 ? 'Countdown starts when you connect abroad' : 'Countdown starts as soon as you install it';
+
 String expiryLabel(DateTime? at) {
   if (at == null) return '';
   final d = at.toLocal().difference(DateTime.now());

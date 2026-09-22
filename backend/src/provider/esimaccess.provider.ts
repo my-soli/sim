@@ -95,6 +95,7 @@ export class EsimAccessProvider extends EsimProvider {
         wholesaleCents: Math.round(p.price / UNITS_PER_CENT),
         currency: p.currencyCode ?? 'USD',
         smsStatus: p.smsStatus ?? 0,
+        activeType: p.activeType === 2 ? 2 : 1,
       });
     }
     return out;
@@ -195,6 +196,7 @@ interface RawPackage {
   location?: string;
   smsStatus?: number;
   dataType?: number;
+  activeType?: number;
 }
 
 interface RawEsim {
