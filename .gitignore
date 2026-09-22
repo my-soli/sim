@@ -1,0 +1,40 @@
+# Secrets and local config — never commit real credentials.
+.env
+.env.*
+!.env.example
+
+# Local Postgres data directory (project-local dev DB).
+.pgdata/
+
+# Node / NestJS backend
+backend/node_modules/
+backend/dist/
+backend/src/generated/
+backend/*.log
+
+# Flutter app
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.pub-cache/
+app/.pub/
+app/build/
+app/ios/Pods/
+app/ios/.symlinks/
+app/ios/Flutter/Flutter.framework
+app/ios/Flutter/Flutter.podspec
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+app/linux/flutter/ephemeral/
+app/macos/Flutter/ephemeral/
+app/windows/flutter/ephemeral/
+*.g.dart
+*.freezed.dart
+
+# Editors / OS
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

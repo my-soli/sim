@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROVISIONING
+  READY
+  FAILED
+  REFUNDED
+}
+
+enum PaymentProvider {
+  STRIPE
+  MPESA
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum EsimStatus {
+  INACTIVE
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum WalletTxnType {
+  PROVIDER_DEBIT
+  PROVIDER_TOPUP
+  REFUND
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  phone     String?  @unique
+  isAdmin   Boolean  @default(false)
+  pushToken String?
+  createdAt DateTime @default(now()) @map("created_at")
+  orders    Order[]
+  walletTxns WalletTxn[]
+
+  @@map("users")
+}
+
+model OtpCode {
+  id         String   @id @default(uuid())
+  identifier String
+  codeHash   String   @map("code_hash")
+  expiresAt  DateTime @map("expires_at")
+  attempts   Int      @default(0)
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([identifier])
+  @@map("otp_codes")
+}
+
+// Local cache of the provider catalog, refreshed by the daily sync job.
+model PackageCache {
+  id             String   @id @default(uuid())
+  providerId     String   @map("provider_id")
+  packageId      String   @map("package_id")
+  name           String
+  countryName    String   @map("country_name")
+  country        String   // ISO alpha-2 for single-country, region code (e.g. EU-42) for multi
+  isRegional     Boolean  @default(false) @map("is_regional")
+  dataBytes      BigInt   @map("data_bytes")
+  validityDays   Int      @map("validity_days")
+  wholesaleCents Int      @map("wholesale_cents")
+  retailCents    Int      @map("retail_cents")
+  currency       String   @default("USD")
+  smsStatus      Int      @default(0) @map("sms_status")
+  active         Boolean  @default(true)
+  syncedAt       DateTime @default(now()) @map("synced_at")
+  orders         Order[]
+
+  @@unique([providerId, packageId])
+  @@index([country])
+  @@map("packages_cache")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String      @map("user_id")
+  user            User        @relation(fields: [userId], references: [id])
+  packageRefId    String      @map("package_ref_id")
+  package         PackageCache @relation(fields: [packageRefId], references: [id])
+  providerOrderNo String?     @map("provider_order_no")
+  status          OrderStatus @default(PENDING_PAYMENT)
+  pricePaidCents  Int         @map("price_paid_cents")
+  wholesaleCostCents Int      @map("wholesale_cost_cents")
+  failureReason   String?     @map("failure_reason")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  payments        Payment[]
+  esim            Esim?
+
+  @@index([userId])
+  @@index([providerOrderNo])
+  @@map("orders")
+}
+
+model Payment {
+  id          String          @id @default(uuid())
+  orderId     String          @map("order_id")
+  order       Order           @relation(fields: [orderId], references: [id])
+  provider    PaymentProvider
+  status      PaymentStatus   @default(PENDING)
+  amountCents Int             @map("amount_cents")
+  externalRef String?         @map("external_ref") // Stripe PaymentIntent id / M-Pesa CheckoutRequestID
+  intentRef   String?         @map("intent_ref") // Stripe PaymentIntent id (for refunds)
+  refundRef   String?         @map("refund_ref")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  @@unique([provider, externalRef])
+  @@map("payments")
+}
+
+model Esim {
+  id             String     @id @default(uuid())
+  orderId        String     @unique @map("order_id")
+  order          Order      @relation(fields: [orderId], references: [id])
+  iccid          String?
+  esimTranNo     String?    @map("esim_tran_no")
+  qrUrl          String?    @map("qr_url")
+  smdpAddress    String?    @map("smdp_address")
+  activationCode String?    @map("activation_code")
+  status         EsimStatus @default(INACTIVE)
+  dataUsedBytes  BigInt     @default(0) @map("data_used_bytes")
+  dataTotalBytes BigInt     @default(0) @map("data_total_bytes")
+  expiresAt      DateTime?  @map("expires_at")
+  lowDataNotified Boolean   @default(false) @map("low_data_notified")
+  expiryNotified Boolean    @default(false) @map("expiry_notified")
+
+  @@map("esims")
+}
+
+// Tracks the provider's prepaid balance movements (our float), not customer money.
+model WalletTxn {
+  id          String        @id @default(uuid())
+  userId      String?       @map("user_id")
+  user        User?         @relation(fields: [userId], references: [id])
+  type        WalletTxnType
+  amountCents Int           @map("amount_cents")
+  providerRef String?       @map("provider_ref")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  @@map("wallet_txns")
+}
+
+// Dedupe for provider webhooks (notifyId) so redeliveries are idempotent.
+model ProviderWebhookEvent {
+  notifyId   String   @id @map("notify_id")
+  notifyType String   @map("notify_type")
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  @@map("provider_webhook_events")
+}
