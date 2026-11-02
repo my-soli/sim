@@ -1,9 +1,9 @@
-# Tembea — travel eSIM storefront (MVP)
+# Travila — travel eSIM storefront (MVP)
 
 A branded storefront on top of the [eSIM Access](https://docs.esimaccess.com/) wholesale eSIM API. Backend in
 NestJS + Prisma + PostgreSQL, storefront in Flutter (mobile + web) from one codebase.
 
-> **Status: MVP, not production-ready.** "Tembea" and the support email are placeholders, Terms/Privacy are
+> **Status: MVP, not production-ready.** "Travila" and the support email are placeholders, Terms/Privacy are
 > DRAFT text, and the real eSIM Access / Stripe / M-Pesa clients have not been exercised against live
 > credentials. See [What's not done](#whats-not-done-yet) before launching this for real.
 

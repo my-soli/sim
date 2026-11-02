@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Bright/light palette only (no dark mode): "Ocean Breeze" — cool near-white background, bright
 /// cyan primary, punchy magenta accent for CTAs and highlights.
 class Brand {
-  static const name = 'Tembea';
+  static const name = 'Travila';
   static const tagline = 'Travel data, sorted before you land.';
   static const supportEmail = 'support@example.com'; // TODO: replace with the real support address
   static const fontFamily = 'Delius';
