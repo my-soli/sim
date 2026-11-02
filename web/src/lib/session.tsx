@@ -15,7 +15,6 @@ const SessionContext = createContext<SessionState | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
-  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
     try {
@@ -23,7 +22,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     } catch {
       /* storage unavailable: start signed out */
     }
-    setRestored(true);
   }, []);
 
   const signIn = (t: string) => {
@@ -43,9 +41,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       /* ignore */
     }
   };
-
-  // Avoid a flash of signed-out UI before localStorage is read on first mount.
-  if (!restored) return null;
 
   return (
     <SessionContext.Provider value={{ token, signedIn: token != null, signIn, signOut }}>
