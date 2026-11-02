@@ -137,6 +137,7 @@ All of these live in `backend/.env` (copy from `backend/.env.example`).
 | `PUBLIC_API_URL` | Public URL of this API (used in M-Pesa's callback URL) | `http://localhost:3100` |
 | `PROVIDER` | `mock` (offline) or `esimaccess` (live) | `mock` |
 | `ESIMACCESS_ACCESS_CODE` | Your eSIM Access API key, from their console's developer section | — |
+| `ESIMACCESS_SECRET_KEY` | Your eSIM Access secret key, same console page — used to HMAC-sign every request | — |
 | `MARKUP_PERCENT` | Retail markup applied over wholesale cost | `40` |
 | `PAYMENTS_MODE` | `mock` (auto-succeeds) or `live` (real Stripe/M-Pesa) | `mock` |
 | `STRIPE_SECRET_KEY` | Stripe secret key | — |
@@ -158,7 +159,7 @@ file.
 
 There is no sandbox — testing spends your real provider balance. Deposit a small amount first. Then:
 
-1. Set `PROVIDER=esimaccess` and `ESIMACCESS_ACCESS_CODE` in `backend/.env`.
+1. Set `PROVIDER=esimaccess`, `ESIMACCESS_ACCESS_CODE`, and `ESIMACCESS_SECRET_KEY` in `backend/.env`.
 2. Restart the backend. Because the package cache is keyed per-provider, it auto-syncs the real catalog on
    boot and retires any `mock` packages so they can't still be bought.
 3. Leave `PAYMENTS_MODE=mock` for your first order so no real card/M-Pesa charge happens.

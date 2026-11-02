@@ -87,7 +87,7 @@ class ContactScreen extends StatelessWidget {
               Row(children: [
                 Icon(Icons.email_outlined, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
-                SelectableText(Brand.supportEmail, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Flexible(child: SelectableText(Brand.supportEmail, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))),
               ]),
               const SizedBox(height: 12),
               const Text('When you write, include your order reference and the email or phone number you signed in with so we can find your order quickly.'),

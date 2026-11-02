@@ -208,7 +208,7 @@ class _CtaBanner extends StatelessWidget {
           FilledButton(
             // Fixed white pill on the fixed brand gradient: fixed dark ink, not theme.colorScheme.surface
             // (which goes near-white and vanishes in light mode).
-            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Brand.lightOnBg, padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18)),
+            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Brand.ink, padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18)),
             onPressed: () => context.go('/destinations'),
             child: const Text('Browse destinations'),
           ),

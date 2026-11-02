@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /checkout/
+Disallow: /orders/
+Disallow: /esims
+
+Sitemap: https://e-sim-bq2.pages.dev/sitemap.xml

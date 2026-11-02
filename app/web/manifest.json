@@ -1,11 +1,11 @@
 {
-    "name": "esim_app",
-    "short_name": "esim_app",
+    "name": "Tembea — Travel eSIM",
+    "short_name": "Tembea",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F5FAFF",
+    "theme_color": "#F5FAFF",
+    "description": "Travel eSIM data plans for over 190 destinations. Pay by card or M-Pesa and activate instantly with a QR code.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

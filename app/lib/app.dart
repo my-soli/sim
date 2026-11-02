@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'core/brand.dart';
 import 'core/session.dart';
 import 'core/site.dart';
-import 'core/theme_controller.dart';
 import 'features/auth/login_screen.dart';
 import 'features/catalog/plans_screen.dart';
 import 'features/checkout/checkout_screen.dart';
@@ -65,60 +64,36 @@ final _router = GoRouter(
 // that throws on any style with no explicit fontSize (ThemeData.primaryTextTheme has exactly that).
 const _fontSizeFactor = 1.15;
 
-// M3-derive the roles the brand palette doesn't specify (error, outline, container tones, ...)
-// from the primary color, then force the five explicit brand colors over the top.
-final _darkTheme = ThemeData(
-  useMaterial3: true,
-  fontFamily: Brand.fontFamily,
-  colorScheme: ColorScheme.fromSeed(seedColor: Brand.primary, brightness: Brightness.dark).copyWith(
-    primary: Brand.primary,
-    onPrimary: Brand.onBg,
-    secondary: Brand.secondary,
-    onSecondary: Brand.bg,
-    tertiary: Brand.accent,
-    onTertiary: Brand.bg,
-    surface: Brand.bg,
-    onSurface: Brand.onBg,
-  ),
-  scaffoldBackgroundColor: Brand.bg,
-);
-
-// Same palette, non-inverted: the light "Text"/"Background" hexes in their original roles.
-final _lightTheme = ThemeData(
+// M3-derives the roles the brand palette doesn't specify (error, outline, container tones, ...)
+// from the primary color, then forces the explicit brand colors over the top. Light/bright only.
+final _theme = ThemeData(
   useMaterial3: true,
   fontFamily: Brand.fontFamily,
   colorScheme: ColorScheme.fromSeed(seedColor: Brand.primary, brightness: Brightness.light).copyWith(
     primary: Brand.primary,
-    onPrimary: Brand.lightBg,
-    secondary: Brand.secondary,
-    onSecondary: Brand.lightOnBg,
+    onPrimary: Colors.white,
     tertiary: Brand.accent,
-    onTertiary: Brand.lightOnBg,
-    surface: Brand.lightBg,
-    onSurface: Brand.lightOnBg,
+    onTertiary: Colors.white,
+    surface: Brand.surface,
+    onSurface: Brand.ink,
   ),
-  scaffoldBackgroundColor: Brand.lightBg,
+  scaffoldBackgroundColor: Brand.bg,
 );
 
 class EsimApp extends StatelessWidget {
   const EsimApp({super.key});
 
   @override
-  Widget build(BuildContext context) => ListenableBuilder(
-        listenable: themeController,
-        builder: (context, _) => MaterialApp.router(
-          title: '${Brand.name}: ${Brand.tagline}',
-          debugShowCheckedModeBanner: false,
-          routerConfig: _router,
-          themeMode: themeController.mode,
-          theme: _lightTheme,
-          darkTheme: _darkTheme,
-          // Flat scale, not composed with the OS/browser's own text-size setting - simple and
-          // predictable for now, at the cost of not respecting a user's system accessibility scaling.
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(_fontSizeFactor)),
-            child: child!,
-          ),
+  Widget build(BuildContext context) => MaterialApp.router(
+        title: '${Brand.name}: ${Brand.tagline}',
+        debugShowCheckedModeBanner: false,
+        routerConfig: _router,
+        theme: _theme,
+        // Flat scale, not composed with the OS/browser's own text-size setting - simple and
+        // predictable for now, at the cost of not respecting a user's system accessibility scaling.
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(_fontSizeFactor)),
+          child: child!,
         ),
       );
 }

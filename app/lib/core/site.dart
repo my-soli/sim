@@ -5,25 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'brand.dart';
 import 'responsive.dart';
 import 'session.dart';
-import 'theme_controller.dart';
-
-/// Sun/moon button that flips the persisted light/dark preference.
-class ThemeToggle extends StatelessWidget {
-  const ThemeToggle({super.key});
-
-  @override
-  Widget build(BuildContext context) => ListenableBuilder(
-        listenable: themeController,
-        builder: (context, _) {
-          final isDark = themeController.mode == ThemeMode.dark;
-          return IconButton(
-            tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
-            icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-            onPressed: themeController.toggle,
-          );
-        },
-      );
-}
 
 class _NavItem {
   const _NavItem(this.label, this.path);
@@ -87,7 +68,7 @@ class SiteShell extends StatelessWidget {
       );
     }
     return Scaffold(
-      appBar: AppBar(title: const BrandMark(), titleSpacing: 16, actions: const [ThemeToggle(), _AuthButton(compact: true)]),
+      appBar: AppBar(title: const BrandMark(), titleSpacing: 16, actions: const [_AuthButton(compact: true)]),
       drawer: Drawer(
         child: SafeArea(
           child: ListView(padding: const EdgeInsets.all(8), children: [
@@ -204,8 +185,6 @@ class _NavBar extends StatelessWidget {
                   icon: const Icon(Icons.sim_card_outlined, size: 18),
                   label: const Text('My eSIMs'),
                 ),
-                const SizedBox(width: 4),
-                const ThemeToggle(),
                 const SizedBox(width: 8),
                 const _AuthButton(),
               ]),

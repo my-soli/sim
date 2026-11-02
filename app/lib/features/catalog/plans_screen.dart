@@ -104,7 +104,7 @@ class _PlansScreenState extends State<PlansScreen> {
           FilledButton.icon(
             // This pill is always white (it sits on the fixed brand gradient, not the theme), so its text is a
             // fixed dark ink too - theme.colorScheme.surface would go near-white and vanish in light mode.
-            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Brand.lightOnBg),
+            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Brand.ink),
             onPressed: () => _showCompat(context),
             icon: const Icon(Icons.smartphone),
             label: const Text('Check compatibility'),

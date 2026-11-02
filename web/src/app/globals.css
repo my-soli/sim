@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/*
+ * Tovila brand palette — bright/light only, no dark mode by design.
+ * Blue + cyan reads as "global signal / connectivity", which suits an eSIM/telecom
+ * product better than a generic travel-pastel palette.
+ */
+:root {
+  --background: #f6f9ff;
+  --surface: #ffffff;
+  --ink: #0b1324;
+  --muted: #5b6b8c;
+  --outline: #e1e8f7;
+  --primary: #2451e8;
+  --primary-ink: #ffffff;
+  --accent: #06c6d9;
+  --accent-ink: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-outline: var(--outline);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: var(--font-delius);
+}
+
+body {
+  background: var(--background);
+  color: var(--ink);
+  font-family: var(--font-delius), ui-sans-serif, system-ui, sans-serif;
+}
+
+.brand-gradient {
+  background-image: linear-gradient(135deg, var(--primary), var(--accent));
+}

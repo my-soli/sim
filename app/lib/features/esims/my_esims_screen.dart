@@ -126,17 +126,23 @@ class _EsimCard extends StatelessWidget {
           const Spacer(),
           Row(children: [
             if (!esim.isExpired)
-              TextButton.icon(
-                onPressed: () => context.push('/orders/${esim.orderId}'),
-                icon: const Icon(Icons.qr_code_2),
-                label: const Text('QR & details'),
+              Flexible(
+                child: TextButton.icon(
+                  onPressed: () => context.push('/orders/${esim.orderId}'),
+                  style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), visualDensity: VisualDensity.compact),
+                  icon: const Icon(Icons.qr_code_2, size: 18),
+                  label: const Text('QR & details', overflow: TextOverflow.ellipsis),
+                ),
               ),
-            const Spacer(),
+            const SizedBox(width: 8),
             // Manual top-up for now: opens the destination's plans to buy more data.
-            FilledButton.tonalIcon(
-              onPressed: () => context.push('/country/${esim.country}'),
-              icon: const Icon(Icons.add),
-              label: const Text('Top up'),
+            Flexible(
+              child: FilledButton.tonalIcon(
+                onPressed: () => context.push('/country/${esim.country}'),
+                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12), visualDensity: VisualDensity.compact),
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text('Top up', overflow: TextOverflow.ellipsis),
+              ),
             ),
           ]),
         ]),

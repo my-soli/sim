@@ -1,3 +1,4 @@
+import { createHmac, randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -56,10 +57,24 @@ export class EsimAccessProvider extends EsimProvider {
 
   private post<T>(path: string, body: unknown = {}): Promise<T> {
     return this.throttled(async () => {
+      const accessCode = this.config.getOrThrow<string>('ESIMACCESS_ACCESS_CODE');
+      const secretKey = this.config.getOrThrow<string>('ESIMACCESS_SECRET_KEY');
+      const timestamp = String(Date.now());
+      const requestId = randomUUID();
+      const requestBody = JSON.stringify(body);
+      // Required by eSIM Access on every call: signData = Timestamp + RequestID + AccessCode + RequestBody,
+      // signature = HMAC-SHA256(signData, SecretKey) as hex. See docs/esim-access.postman_collection.json.
+      const signature = createHmac('sha256', secretKey).update(timestamp + requestId + accessCode + requestBody).digest('hex');
       const res = await fetch(`${this.baseUrl}/${path}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'RT-AccessCode': this.config.getOrThrow<string>('ESIMACCESS_ACCESS_CODE') },
-        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'RT-AccessCode': accessCode,
+          'RT-Timestamp': timestamp,
+          'RT-RequestID': requestId,
+          'RT-Signature': signature,
+        },
+        body: requestBody,
         signal: AbortSignal.timeout(30_000),
       });
       const json = (await res.json()) as Envelope<T>;

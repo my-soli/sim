@@ -156,7 +156,11 @@ export class PaymentsService {
     }
     const base = this.config.get('MPESA_BASE_URL', 'https://sandbox.safaricom.co.ke');
     const shortcode = this.config.getOrThrow<string>('MPESA_SHORTCODE');
-    const ts = new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
+    // Daraja requires the Timestamp (and the password derived from it) in East Africa Time
+    // (UTC+3, no DST), not server-local or raw UTC - our host runs in UTC, so this must be shifted
+    // explicitly or every request silently fails timestamp validation.
+    const eat = new Date(Date.now() + 3 * 60 * 60 * 1000);
+    const ts = eat.toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
     const password = Buffer.from(`${shortcode}${this.config.getOrThrow('MPESA_PASSKEY')}${ts}`).toString('base64');
     const token = await this.darajaToken(base);
     const res = await fetch(`${base}/mpesa/stkpush/v1/processrequest`, {
