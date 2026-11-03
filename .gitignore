@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+BACKEND.md
 
 # Local Postgres data directory (project-local dev DB).
 .pgdata/

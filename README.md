@@ -150,7 +150,11 @@ All of these live in `backend/.env` (copy from `backend/.env.example`).
 | `OTP_DEV_ECHO` | If `true`, `/auth/otp/request` returns the code in the response (dev only) | `true` |
 | `ADMIN_EMAILS` | Comma-separated emails granted admin on first sign-in | `admin@example.com` |
 | `LOW_BALANCE_CENTS` | Threshold for the hourly provider-balance check | `5000` |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `MAIL_FROM` | Outgoing email. Empty `SMTP_HOST` logs emails to the console instead of sending | — |
+| `RESEND_API_KEY` | Outgoing email via Resend's HTTP API (preferred — works even where SMTP ports are blocked, e.g. Railway Hobby) | — |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `MAIL_FROM` | Fallback outgoing email via SMTP, used only if `RESEND_API_KEY` is unset. Empty `SMTP_HOST` too logs emails to the console instead of sending | — |
+| `AT_USERNAME` / `AT_API_KEY` / `AT_SENDER_ID` | Africa's Talking SMS (phone OTP). Empty `AT_USERNAME`/`AT_API_KEY` logs the code to the console instead of sending | — |
+| `BRAND_NAME` | Name used in the SMS OTP message text | `eSIM` |
+| `WEB_ORIGIN` | Comma-separated allowed CORS origins for the web app. Empty reflects any origin (dev only) | — |
 
 The Flutter app has one build-time variable, `API_BASE` (see above), passed via `--dart-define`, not an `.env`
 file.
@@ -174,8 +178,9 @@ There is no sandbox — testing spends your real provider balance. Deposit a sma
   needs a different or additional supplier.
 - **Live payments untested.** Stripe and M-Pesa Daraja integrations are written but have not run against real
   keys.
-- **SMS/phone OTP delivery.** Phone-number OTPs are only logged server-side; there's no SMS gateway wired up.
-  Email OTP works once `SMTP_HOST` is set.
+- **SMS/phone OTP delivery.** Works once `AT_USERNAME`/`AT_API_KEY` (Africa's Talking) are set; otherwise codes
+  are only logged server-side. Email OTP works once `RESEND_API_KEY` (preferred) or `SMTP_HOST` is set — note
+  Railway's Hobby plan blocks outbound SMTP ports entirely, so `RESEND_API_KEY` is required there.
 - **Push notifications.** Users have a `pushToken` column but nothing sends to FCM/APNs yet. Low-data/expiry
   alerts currently go out by email only.
 - **eSIM Access "Set Webhook" call** isn't wired up — the backend can *receive and parse* their webhooks at
@@ -185,5 +190,6 @@ There is no sandbox — testing spends your real provider balance. Deposit a sma
 - **No admin UI** — only the admin API endpoints exist.
 - **Brand, legal, and content placeholders**: brand name and support email (`app/lib/core/brand.dart`),
   Terms/Privacy (`app/lib/features/site/info_pages.dart`, marked DRAFT — have a lawyer review before launch).
-- Before public launch: set `OTP_DEV_ECHO=false`, use a long random `JWT_SECRET`, restrict CORS to your real
-  domain, and serve everything over HTTPS.
+- Before public launch: set `OTP_DEV_ECHO=false` (only after `AT_USERNAME`/`AT_API_KEY` and/or `SMTP_HOST` are
+  configured — otherwise no one can sign in), use a long random `JWT_SECRET`, set `WEB_ORIGIN` to your real
+  domain(s), and serve everything over HTTPS.

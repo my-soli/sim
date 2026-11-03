@@ -7,7 +7,7 @@ import { SessionProvider } from "@/lib/session";
 import { Brand } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://e-sim-bq2.pages.dev"),
+  metadataBase: new URL("https://e-sim-website-production.up.railway.app"),
   title: {
     default: `${Brand.name} — Travel eSIM data plans for over 190 destinations`,
     template: `%s — ${Brand.name}`,

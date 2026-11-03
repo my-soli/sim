@@ -13,7 +13,10 @@ process.on('uncaughtException', (err) => logger.error(`Uncaught exception: ${err
 async function bootstrap() {
   // rawBody is needed to verify Stripe webhook signatures.
   const app = await NestFactory.create(AppModule, { rawBody: true });
-  app.enableCors({ origin: true }); // tighten to the web app origin in production
+  // WEB_ORIGIN is a comma-separated allowlist (e.g. the production site plus any preview domains).
+  // Falls back to reflecting the request origin only when unset, so local/dev setups keep working.
+  const webOrigin = process.env.WEB_ORIGIN?.split(',').map((o) => o.trim()).filter(Boolean);
+  app.enableCors({ origin: webOrigin && webOrigin.length > 0 ? webOrigin : true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   const port = Number(process.env.PORT) || 3000;
   // Explicit 0.0.0.0, not left to Node's default - hosts like Railway route to the
