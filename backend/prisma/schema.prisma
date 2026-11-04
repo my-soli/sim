@@ -21,6 +21,7 @@ enum OrderStatus {
 enum PaymentProvider {
   STRIPE
   MPESA
+  PESAPAL
 }
 
 enum PaymentStatus {

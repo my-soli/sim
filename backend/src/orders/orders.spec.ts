@@ -128,7 +128,7 @@ describe('OrdersService payment -> provisioning', () => {
     const order = await svc.create('user-1', 'pkg-1');
 
     await svc.onPaymentSucceeded(order.id);
-    await svc.onPaymentSucceeded(order.id); // e.g. Stripe redelivers the same event
+    await svc.onPaymentSucceeded(order.id); // e.g. a payment webhook redelivers the same event
     await new Promise((r) => setTimeout(r, 0)); // let the fire-and-forget fulfil() microtask run
 
     expect(provider.createOrder).toHaveBeenCalledTimes(1);

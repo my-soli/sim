@@ -133,20 +133,20 @@ All of these live in `backend/.env` (copy from `backend/.env.example`).
 | `DATABASE_URL` | Postgres connection string | — (required) |
 | `JWT_SECRET` | Signs auth tokens | any string; **use a long random one before going live** |
 | `PORT` | Backend HTTP port | `3100` |
-| `APP_URL` | Public URL of the Flutter web app (used in Stripe redirect URLs) | `http://localhost:8090` |
-| `PUBLIC_API_URL` | Public URL of this API (used in M-Pesa's callback URL) | `http://localhost:3100` |
+| `APP_URL` | Public URL of the web app (used in Pesapal redirect URLs) | `http://localhost:8090` |
+| `PUBLIC_API_URL` | Public URL of this API (used in M-Pesa's and Pesapal's callback URLs) | `http://localhost:3100` |
 | `PROVIDER` | `mock` (offline) or `esimaccess` (live) | `mock` |
 | `ESIMACCESS_ACCESS_CODE` | Your eSIM Access API key, from their console's developer section | — |
 | `ESIMACCESS_SECRET_KEY` | Your eSIM Access secret key, same console page — used to HMAC-sign every request | — |
 | `MARKUP_PERCENT` | Retail markup applied over wholesale cost | `40` |
-| `PAYMENTS_MODE` | `mock` (auto-succeeds) or `live` (real Stripe/M-Pesa) | `mock` |
-| `STRIPE_SECRET_KEY` | Stripe secret key | — |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | — |
+| `PAYMENTS_MODE` | `mock` (auto-succeeds) or `live` (real M-Pesa/Pesapal) | `mock` |
 | `MPESA_BASE_URL` | Daraja API base (sandbox or production) | Safaricom sandbox |
 | `MPESA_CONSUMER_KEY` / `MPESA_CONSUMER_SECRET` | Daraja app credentials | — |
 | `MPESA_SHORTCODE` / `MPESA_PASSKEY` | Daraja paybill/till + STK passkey | — |
 | `MPESA_CALLBACK_SECRET` | Random string embedded in the M-Pesa callback URL as a shared secret | change me |
-| `KES_PER_USD` | USD→KES conversion used to quote M-Pesa amounts | `129` |
+| `KES_PER_USD` | USD→KES conversion used to quote M-Pesa and Pesapal amounts | `129` |
+| `PESAPAL_BASE_URL` | Pesapal API base (sandbox or production) | Pesapal sandbox |
+| `PESAPAL_CONSUMER_KEY` / `PESAPAL_CONSUMER_SECRET` | Pesapal merchant app credentials (card payments — used instead of Stripe, which doesn't support direct Kenya signup) | — |
 | `OTP_DEV_ECHO` | If `true`, `/auth/otp/request` returns the code in the response (dev only) | `true` |
 | `ADMIN_EMAILS` | Comma-separated emails granted admin on first sign-in | `admin@example.com` |
 | `LOW_BALANCE_CENTS` | Threshold for the hourly provider-balance check | `5000` |
@@ -166,7 +166,7 @@ There is no sandbox — testing spends your real provider balance. Deposit a sma
 1. Set `PROVIDER=esimaccess`, `ESIMACCESS_ACCESS_CODE`, and `ESIMACCESS_SECRET_KEY` in `backend/.env`.
 2. Restart the backend. Because the package cache is keyed per-provider, it auto-syncs the real catalog on
    boot and retires any `mock` packages so they can't still be bought.
-3. Leave `PAYMENTS_MODE=mock` for your first order so no real card/M-Pesa charge happens.
+3. Leave `PAYMENTS_MODE=mock` for your first order so no real card/M-Pesa/Pesapal charge happens.
 4. Place a small test order in the app and confirm it reaches `READY` with a real QR code.
 5. Cancel the test eSIM before installing it (`POST /admin/orders/:id/refund`, or via the eSIM Access console)
    to get the wholesale cost back — cancellation only works before the profile is installed.
@@ -176,8 +176,8 @@ There is no sandbox — testing spends your real provider balance. Deposit a sma
 - **Voice / SMS / phone numbers.** eSIM Access sells data plans only. Some plans can receive SMS
   (`smsStatus`, surfaced as a badge/filter in the app); nothing here provides calls or a phone number — that
   needs a different or additional supplier.
-- **Live payments untested.** Stripe and M-Pesa Daraja integrations are written but have not run against real
-  keys.
+- **Live payments untested.** M-Pesa Daraja and Pesapal integrations are written but have not run against real
+  keys. (Stripe was dropped entirely — it doesn't support direct account signup from Kenya.)
 - **SMS/phone OTP delivery.** Works once `AT_USERNAME`/`AT_API_KEY` (Africa's Talking) are set; otherwise codes
   are only logged server-side. Email OTP works once `RESEND_API_KEY` (preferred) or `SMTP_HOST` is set — note
   Railway's Hobby plan blocks outbound SMTP ports entirely, so `RESEND_API_KEY` is required there.

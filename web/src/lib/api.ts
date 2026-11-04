@@ -95,8 +95,8 @@ export const getOrder = (id: string, token: string) => send<OrderInfo>("GET", `/
 
 export const getEsims = (token: string) => send<EsimInfo[]>("GET", "/esims", undefined, token);
 
-export const stripeCheckout = (orderId: string, token: string) =>
-  send<{ url?: string }>("POST", "/payments/stripe/checkout", { orderId }, token).then((r) => r.url ?? null);
+export const pesapalCheckout = (orderId: string, token: string) =>
+  send<{ url?: string }>("POST", "/payments/pesapal/checkout", { orderId }, token).then((r) => r.url ?? null);
 
 export const mpesaStk = (orderId: string, phone: string, token: string) =>
   send<{ amountKes: number }>("POST", "/payments/mpesa/stk", { orderId, phone }, token).then((r) => r.amountKes);

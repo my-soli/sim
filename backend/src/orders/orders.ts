@@ -100,7 +100,7 @@ export class OrdersService {
       .then((rows) => Promise.all(rows.map((r) => this.view(r.id, userId))));
   }
 
-  /** Called once a payment (Stripe or M-Pesa) is confirmed. Idempotent. */
+  /** Called once a payment (M-Pesa or Pesapal) is confirmed. Idempotent. */
   async onPaymentSucceeded(orderId: string) {
     const { count } = await this.prisma.order.updateMany({
       where: { id: orderId, status: 'PENDING_PAYMENT' },

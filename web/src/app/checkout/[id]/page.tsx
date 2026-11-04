@@ -3,7 +3,7 @@
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ApiError, getOrder, mpesaStk, stripeCheckout, type OrderInfo } from "@/lib/api";
+import { ApiError, getOrder, mpesaStk, pesapalCheckout, type OrderInfo } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { dataLabel, daysLabel, flagFor, money } from "@/lib/format";
 
@@ -82,11 +82,11 @@ export default function CheckoutPage({ params }: { params: Promise<{ id: string 
     setPayError(null);
     try {
       if (method === "card") {
-        const url = await stripeCheckout(order.id, token);
+        const url = await pesapalCheckout(order.id, token);
         if (!url) {
           startPolling("Processing your card payment…"); // mock mode: completes server-side
         } else {
-          window.location.href = url; // Stripe returns to /orders/<id>
+          window.location.href = url; // Pesapal returns to /checkout/<id>
         }
       } else {
         const kes = await mpesaStk(order.id, phone.trim(), token);
@@ -200,7 +200,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ id: string 
                     </span>
                   </label>
                 ) : (
-                  <p className="text-muted">You&apos;ll be taken to Stripe&apos;s secure page to pay by card.</p>
+                  <p className="text-muted">You&apos;ll be taken to a secure page to pay by card.</p>
                 )}
               </div>
 
